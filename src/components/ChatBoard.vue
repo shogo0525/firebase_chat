@@ -52,7 +52,7 @@ import { addEventHandlers, fetchMessages, addMessage } from '@/api/message';
 export default class ChatBoard extends Vue {
   @Prop() public roomId!: string;
 
-public user: User = { id: null, email: '', avatar_image_url: '' };
+  public user: User = { id: null, email: '', avatar_image_url: '' };
   public participants: User[] = [];
   public messages: Message[] = [];
   public message: Message = { room_id: this.roomId, sender_id: null, content: '', created_at: null };
