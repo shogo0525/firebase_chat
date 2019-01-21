@@ -30,7 +30,7 @@
     <el-row class="message_form">
       <el-col>
         <el-form>
-          <el-input type="textarea" v-model="message.content" @keypress.native="inputText"/>
+          <el-input type="textarea" v-model="message.content" @keypress.native.enter.prevent="sendMessage"/>
         </el-form>
       </el-col>
     </el-row>
@@ -96,14 +96,9 @@ public user: User = { id: null, email: '', avatar_image_url: '' };
     addMessage(message);
   }
 
-  public inputText(event: KeyboardEvent): boolean {
-    if (event.key === 'Enter') {
-      this.addMessage(Object.assign({}, this.message, { sender_id: this.user.id }));
-      this.message = { room_id: this.roomId, sender_id: null, content: '', created_at: null };
-      event.preventDefault();
-      return false;
-    }
-    return true;
+  public sendMessage(event: KeyboardEvent): void {
+    this.addMessage(Object.assign({}, this.message, { sender_id: this.user.id }));
+    this.message = { room_id: this.roomId, sender_id: null, content: '', created_at: null };
   }
 }
 </script>
