@@ -8,17 +8,17 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import ChatBoard from '@/components/ChatBoard.vue'; // @ is an alias to /src
+<script>
+import ChatBoard from '@/components/ChatBoard.vue';
 
-@Component({
+export default  {
   components: {
     ChatBoard,
   },
-})
-export default class Home extends Vue {
-  private roomId: string = process.env.FIREBASE_ROOM_ID;
+  data() {
+    return {
+      roomId: 'tadoru'
+    }
+  }
 }
-
 </script>

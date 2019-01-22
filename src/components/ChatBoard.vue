@@ -37,27 +37,32 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator';
-import { Message } from '@/types/message';
-import { User } from '@/types/user';
+<script>
 import MessageItem from '@/components/Message.vue';
 import { currentUser } from '@/api/auth';
 import { fetchParticipants } from '@/api/participant';
 import { addEventHandlers, fetchMessages, addMessage } from '@/api/message';
 
-@Component({
+export default {
   components: { MessageItem },
-})
-export default class ChatBoard extends Vue {
-  @Prop() public roomId!: string;
-
-  public user: User = { id: null, email: '', avatar_image_url: '' };
-  public participants: User[] = [];
-  public messages: Message[] = [];
-  public message: Message = { room_id: this.roomId, sender_id: null, content: '', created_at: null };
-
-  public async created(): Promise<void> {
+  props: ['roomId'],
+  data() {
+    return {
+      user: {
+        id: null,
+        email: '',
+        avatar_image_url: ''
+      },
+      participants: [],
+      messages: [],
+      message: {
+        room_id: this.roomId,
+        sender_id: null, content: '',
+        created_at: null
+      },
+    }
+  },
+  async created() {
     const user = await currentUser();
     if (!user) {
       return;
@@ -66,39 +71,37 @@ export default class ChatBoard extends Vue {
 
     this.participants = await fetchParticipants(this.roomId);
 
-    const added = (message: Message): void => {
+    const added = (message) => {
         this.addMessageData(message);
     };
 
     addEventHandlers(added);
 
     this.messages = await fetchMessages(this.roomId);
-  }
-
-  public getParticipantById(id: string): User {
-    const sender = this.participants.find((p) => p.id === id);
-    if (sender) {
-      return sender;
+  },
+  methods: {
+    getParticipantById(id) {
+      const sender = this.participants.find((p) => p.id === id);
+      if (sender) {
+        return sender;
+      }
+      return { id: null, email: null, avatar_image_url: null };
+    },
+    addMessageData(message) {
+      this.messages.push({
+        room_id: this.roomId,
+        sender_id: message.sender_id,
+        content: message.content,
+        created_at: message.created_at,
+      });
+    },
+    addMessage(message) {
+      addMessage(message);
+    },
+    sendMessage(event) {
+      this.addMessage(Object.assign({}, this.message, { sender_id: this.user.id }));
+      this.message = { room_id: this.roomId, sender_id: null, content: '', created_at: null };
     }
-    return { id: null, email: null, avatar_image_url: null };
-  }
-
-  public addMessageData(message: Message): void {
-    this.messages.push({
-      room_id: this.roomId,
-      sender_id: message.sender_id,
-      content: message.content,
-      created_at: message.created_at,
-    });
-  }
-
-  public addMessage(message: Message): void {
-    addMessage(message);
-  }
-
-  public sendMessage(event: KeyboardEvent): void {
-    this.addMessage(Object.assign({}, this.message, { sender_id: this.user.id }));
-    this.message = { room_id: this.roomId, sender_id: null, content: '', created_at: null };
   }
 }
 </script>

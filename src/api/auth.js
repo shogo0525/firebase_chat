@@ -1,12 +1,9 @@
-import { Route, RouteRecord } from 'vue-router';
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
-import { UserCredential } from '@firebase/auth-types';
-import { User } from '@/types/user';
 import { db } from '@/plugins/firebase';
 
-export const authMiddleware = (to: Route, from: Route, next: any) => {
-  const requiresAuth = to.matched.some((record: RouteRecord) => record.meta.requiresAuth);
+export const authMiddleware = (to, from, next) => {
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
   if (!requiresAuth) {
     next();
   } else {
@@ -23,15 +20,15 @@ export const authMiddleware = (to: Route, from: Route, next: any) => {
   }
 };
 
-export const signUp = (email: string, password: string): Promise<UserCredential> => {
+export const signUp = (email, password) => {
   return firebase.auth().createUserWithEmailAndPassword(email, password);
 };
 
-export const signIn = (email: string, password: string): Promise<UserCredential> => {
+export const signIn = (email, password) => {
   return firebase.auth().signInWithEmailAndPassword(email, password);
 };
 
-export const currentUser = async (): Promise<User | null> => {
+export const currentUser = async () => {
   const fireUser = firebase.auth().currentUser;
   if (!fireUser) {
     return null;

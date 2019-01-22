@@ -10,19 +10,13 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator';
-import { Message as MessageType } from '@/types/message';
-import { User } from '@/types/user';
-
-@Component({})
-export default class Message extends Vue {
-  @Prop() public value!: MessageType;
-  @Prop() public sender!: User;
-  @Prop() public me!: boolean;
-
-  get cls(): {} {
-    return { me: this.me };
+<script>
+export default {
+  props: ['value', 'sender', 'me'],
+  computed: {
+    cls() {
+      return { me: this.me };
+    }
   }
 }
 </script>

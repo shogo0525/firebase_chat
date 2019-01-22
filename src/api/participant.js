@@ -1,10 +1,10 @@
 import { db } from '@/plugins/firebase';
 import { User } from '@/types/user';
 
-export const fetchParticipants = async (roomId: string): Promise<User[]> => {
-  const participants: User[] = [];
+export const fetchParticipants = async (roomId) => {
+  const participants = [];
   const querySnapshot = await db.collection('participants').where('room_id', '==', roomId).get();
-  querySnapshot.forEach((doc: any) => {
+  querySnapshot.forEach((doc) => {
     const uid = doc.data().user_id;
     db.collection('users').doc(uid).get().then((userDoc) => {
       const user = userDoc.data();

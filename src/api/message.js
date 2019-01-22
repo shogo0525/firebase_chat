@@ -1,15 +1,12 @@
 import * as firebase from 'firebase/app';
 import { db } from '@/plugins/firebase';
 import m from 'moment';
-import { Message } from '@/types/message';
 
-const timestamp2String = (ts: firebase.firestore.Timestamp): string => {
+const timestamp2String = (ts) => {
   return ts ? m(ts.toDate()).format('YYYY/MM/DD HH:mm:ss') : '';
 };
 
-type MessageHandler = (message: Message) => void;
-
-export const addEventHandlers = (added: MessageHandler, modified?: MessageHandler, removed?: MessageHandler) => {
+export const addEventHandlers = (added, modified, removed) => {
   db.collection('messages')
   .onSnapshot((snapshot) => {
     const changes = snapshot.docChanges();
@@ -36,10 +33,10 @@ export const addEventHandlers = (added: MessageHandler, modified?: MessageHandle
   });
 };
 
-export const fetchMessages = async (roomId: string): Promise<Message[]> => {
+export const fetchMessages = async (roomId) => {
   const querySnapshot = await db.collection('messages').orderBy('created_at').get();
-  const messages: Message[] = [];
-  querySnapshot.forEach((doc: any) => {
+  const messages = [];
+  querySnapshot.forEach((doc) => {
     messages.push({
       room_id: roomId,
       sender_id: doc.data().sender_id,
@@ -50,7 +47,7 @@ export const fetchMessages = async (roomId: string): Promise<Message[]> => {
   return messages;
 };
 
-export const addMessage = (message: Message): void => {
+export const addMessage = (message)=> {
   db.collection('messages').add({ ...message, created_at: firebase.firestore.Timestamp.now() });
 };
 
